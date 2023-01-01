@@ -3,6 +3,14 @@ import type { Plugin, AliasOptions } from 'vite'
 import fs from 'node:fs'
 import path from 'node:path'
 
+const addAlias = (aliases: AliasOptions, alias: string, path: string): void => {
+  if (!aliases.hasOwnProperty(alias)) {
+    Object.defineProperty(aliases, alias, {
+      value: path,
+    })
+  }
+}
+
 const generateAlias = (alias: AliasOptions, {
   enable = true,
   root = __dirname,
@@ -10,23 +18,15 @@ const generateAlias = (alias: AliasOptions, {
 }: PluginConfig): AliasOptions => {
   try {
     const src = path.resolve(root, './src/')
-    Object.defineProperty(alias, '@', {
-      value: src,
-    })
+    addAlias(alias, prefix, src)
 
     if (enable) {
       const fds = fs.readdirSync(src)
       fds.forEach(v => {
         const fss = path.resolve(src, v)
-        try {
-          const fstat = fs.statSync(fss)
-          if (fstat.isDirectory()) {
-            Object.defineProperty(alias, prefix + v, {
-              value: fss,
-            })
-          }
-        } catch (err) {
-          console.error(err)
+        const fstat = fs.statSync(fss)
+        if (fstat.isDirectory()) {
+          addAlias(alias, prefix + v, fss)
         }
       })
     }
