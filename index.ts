@@ -14,10 +14,11 @@ const addAlias = (aliases: AliasOptions, alias: string, path: string): void => {
 const generateAlias = (alias: AliasOptions, {
   enable = true,
   root = process.cwd(),
+  dir = 'src',
   prefix = '@',
 }: PluginConfig): AliasOptions => {
   try {
-    const src = path.resolve(root, './src/')
+    const src = path.resolve(root, dir)
     addAlias(alias, prefix, src)
 
     if (enable) {
@@ -39,6 +40,7 @@ const generateAlias = (alias: AliasOptions, {
 interface PluginConfig {
   enable?: boolean
   root?: string
+  dir?: string
   prefix?: string
 }
 
