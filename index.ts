@@ -13,7 +13,7 @@ const addAlias = (aliases: AliasOptions, alias: string, path: string): void => {
 
 const generateAlias = (alias: AliasOptions, {
   enable = true,
-  root = __dirname,
+  root = process.cwd(),
   prefix = '@',
 }: PluginConfig): AliasOptions => {
   try {
@@ -45,7 +45,6 @@ interface PluginConfig {
 export default function (pluginConfig: PluginConfig = {}): Plugin {
   return {
     name: 'vite-plugin-auto-aliases',
-    enforce: 'pre',
     config: config => ({
       resolve: {
         alias: generateAlias(config.resolve?.alias ?? {}, pluginConfig),
