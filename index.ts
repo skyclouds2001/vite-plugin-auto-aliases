@@ -16,6 +16,9 @@ const generateAlias = (alias: AliasOptions, {
   root = process.cwd(),
   dir = 'src',
   prefix = '@',
+  log = true,
+  logPath = path.resolve(process.cwd(), 'logs'),
+  logFile = 'vite-plugin-auto-aliases.log',
 }: PluginConfig): AliasOptions => {
   try {
     const src = path.resolve(root, dir)
@@ -32,7 +35,13 @@ const generateAlias = (alias: AliasOptions, {
       })
     }
   } catch (err) {
-    console.error(err)
+    console.error('[ERROR] VITE_PLUGIN_AUTO_ALIASES: ', err)
+    try {
+      if (log) {
+        const error = err as Error
+        fs.writeFileSync(path.resolve(logPath, logFile), error.name + ' : ' + error.message)
+      }
+    } catch {}
   }
   return alias
 }
@@ -42,6 +51,9 @@ interface PluginConfig {
   root?: string
   dir?: string
   prefix?: string
+  log?: boolean
+  logPath?: string
+  logFile?: string
 }
 
 export default function (pluginConfig: PluginConfig = {}): Plugin {
